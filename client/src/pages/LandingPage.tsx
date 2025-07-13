@@ -1,17 +1,50 @@
-import { Container, Typography, Box } from "@mui/material";
+import { Container, Typography, Box, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+
   return (
-    <Container maxWidth="md">
-      <Box textAlign="center" mt={10}>
-        <Typography variant="h2" gutterBottom>
-          Welcome to BlogIt
-        </Typography>
-        <Typography variant="h6" color="textSecondary">
-          Create, share, and explore blogs.
-        </Typography>
-      </Box>
-    </Container>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundImage: `url('/background.avif')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        px: 2,
+        color: "#fff",
+        backdropFilter: "brightness(0.6)", // Optional: darken for contrast
+      }}
+    >
+      <Container maxWidth="sm">
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Typography variant="h2" gutterBottom sx={{ fontWeight: "bold" }}>
+            Welcome to BlogIt
+          </Typography>
+          <Typography variant="h6" sx={{ mb: 4 }}>
+            Create, share, and explore inspiring blog stories.
+          </Typography>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            onClick={() => navigate("/blogs")}
+            sx={{ borderRadius: 3, boxShadow: 4 }}
+          >
+            Explore Blogs
+          </Button>
+        </motion.div>
+      </Container>
+    </Box>
   );
 };
 

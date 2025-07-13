@@ -10,6 +10,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const EditBlogPage = () => {
   const { id } = useParams();
@@ -45,8 +46,13 @@ const EditBlogPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!title || !synopsis || !content || !featuredImg) {
+      toast.error("All fields are required.");
+      return;
+    }
+
     try {
-      await axios.put(
+      await axios.patch(
         `http://localhost:5678/api/blogs/${id}`,
         { title, synopsis, featuredImg, content },
         {
@@ -55,15 +61,25 @@ const EditBlogPage = () => {
           },
         }
       );
+      toast.success("Blog updated successfully!");
       navigate(`/blogs/${id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to update blog");
+      console.error("Update blog error:", err);
+      toast.error(err.response?.data?.message || "Failed to update blog");
     }
   };
 
-  if (loading) {
+  if (!token) {
     return (
       <Container sx={{ mt: 4 }}>
+        <Typography color="error">You must be logged in to edit blogs.</Typography>
+      </Container>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Container sx={{ mt: 4, textAlign: "center" }}>
         <CircularProgress />
       </Container>
     );
@@ -106,6 +122,7 @@ const EditBlogPage = () => {
           value={featuredImg}
           onChange={(e) => setFeaturedImg(e.target.value)}
           sx={{ mb: 2 }}
+          required
         />
         <TextField
           fullWidth
@@ -115,6 +132,7 @@ const EditBlogPage = () => {
           multiline
           rows={8}
           sx={{ mb: 3 }}
+          required
         />
         <Button type="submit" variant="contained" fullWidth>
           Update Blog

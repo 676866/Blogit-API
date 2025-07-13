@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext";
 const CreateBlogPage = () => {
   const [title, setTitle] = useState("");
   const [synopsis, setSynopsis] = useState("");
-  const [featuredImg, setFeaturedImg] = useState("");
+  const [featuredImg, setFeaturedImg] = useState(""); // ✅ matches backend
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -27,20 +27,38 @@ const CreateBlogPage = () => {
     setError("");
     setSuccess(false);
 
+    if (!token) {
+      setError("You must be logged in to create a blog.");
+      return;
+    }
+
+    if (!title || !synopsis || !content || !featuredImg) {
+      setError("All fields are required.");
+      return;
+    }
+
     try {
       const res = await axios.post(
-        "http://localhost:5678/api/blogs",
-        { title, synopsis, featuredImg, content },
+        "http://localhost:5678/api/blogs", // ✅ backend port
+        {
+          title,
+          synopsis,
+          featuredImg, // ✅ key name matches backend
+          content,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
+
       console.log("Blog created:", res.data);
       setSuccess(true);
       navigate("/blogs");
     } catch (err: any) {
+      console.error("Create blog error:", err.response);
       setError(err.response?.data?.message || "Failed to create blog");
     }
   };
@@ -88,6 +106,7 @@ const CreateBlogPage = () => {
           value={featuredImg}
           onChange={(e) => setFeaturedImg(e.target.value)}
           sx={{ mb: 2 }}
+          required
         />
         <TextField
           fullWidth

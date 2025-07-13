@@ -1,38 +1,105 @@
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
-import { useState } from 'react';
+import React, { useState } from "react";
+import {
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Container,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../context/AuthContext"; // ✅ import context
 
-const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    identifier: '', // email or username
-    password: '',
-  });
+const Login = () => {
+  const navigate = useNavigate();
+  const { setUser } = useAuth(); // ✅ get setUser from context
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login data:', formData);
-    // TODO: call your backend API
+    try {
+      const res = await axios.post("http://localhost:5678/auth/login", {
+        identifier: email,
+        password,
+      });
+
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+
+      // ✅ Decode token and update user context
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUser({
+        id: payload.id,
+        email: payload.email,
+        username: payload.username,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+      });
+
+      toast.success("Login successful!");
+      navigate("/profile"); // ✅ redirect
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Login failed");
+    }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box mt={8}>
-        <Typography variant="h4" gutterBottom>
-          Login to BlogIt
+      <Paper elevation={6} sx={{ p: 4, mt: 10, borderRadius: 3 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Welcome Back 👋
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField fullWidth label="Email or Username" name="identifier" margin="normal" onChange={handleChange} />
-          <TextField fullWidth label="Password" name="password" type="password" margin="normal" onChange={handleChange} />
-          <Button fullWidth type="submit" variant="contained" sx={{ mt: 2 }}>
+        <Typography variant="subtitle1" align="center" mb={3}>
+          Login to your BlogIt account
+        </Typography>
+        <form onSubmit={handleLogin}>
+          <TextField
+            label="Email or Username"
+            fullWidth
+            margin="normal"
+            type="text"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            label="Password"
+            fullWidth
+            margin="normal"
+            type="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              mt: 2,
+              py: 1.5,
+              fontWeight: "bold",
+              backgroundColor: "#1976d2",
+              ":hover": { backgroundColor: "#115293" },
+            }}
+          >
             Login
           </Button>
         </form>
-      </Box>
+        <Typography variant="body2" align="center" mt={2}>
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            style={{ color: "#1976d2", cursor: "pointer", fontWeight: 500 }}
+          >
+            Register
+          </span>
+        </Typography>
+      </Paper>
     </Container>
   );
 };
 
-export default LoginPage;
+export default Login;

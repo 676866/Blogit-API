@@ -7,6 +7,8 @@ import {
   Typography,
   CardActions,
   Button,
+  Box,
+  Avatar,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import axios from "axios";
@@ -46,12 +48,13 @@ const BlogListPage = () => {
   }, []);
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        All Blogs
+    <Container sx={{ mt: 4,  py: 6}}>
+      <Box  display="flex" justifyContent="space-between" mb={3}>
+      <Typography variant="h4"  fontWeight={600} >
+        Recent Blogs Posts
       </Typography>
 
-      {/* Button to create new blog */}
+     
       <Button
         variant="contained"
         component={Link}
@@ -60,6 +63,7 @@ const BlogListPage = () => {
       >
         Create Blog
       </Button>
+ </Box>
 
       {loading ? (
         <Typography>Loading...
@@ -80,33 +84,64 @@ const BlogListPage = () => {
             >
               <Card
   sx={{
-    display: "flex",
+     mb: 4,
+     display: "flex",
     flexDirection: "column",
     height: "100%",
-    transition: "transform 0.3s, box-shadow 0.3s",
+    borderRadius: 3,
+    boxShadow: 3,
+    overflow: "hidden",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
     "&:hover": {
-      transform: "scale(1.02)",
+      transform: "scale(1.01)",
       boxShadow: 6,
     },
   }}
 >
   <CardMedia
-    component="img"
-    height="200"
+     component="img"
+     height="180"
     image={blog.featuredImg || "https://via.placeholder.com/400x200"}
     alt={blog.title}
-    sx={{ objectFit: "cover" }}
+    sx={{
+      
+      //  width: "100%",
+      objectFit: "cover",
+    }}
   />
-  <CardContent sx={{ flexGrow: 1 }}>
-    <Typography variant="h6" gutterBottom>
+   <CardContent sx={{ flexGrow: 1 }}>
+    <Typography variant="subtitle1"  fontWeight={600}  gutterBottom>
       {blog.title}
     </Typography>
-    <Typography variant="body2" color="text.secondary">
-      {blog.content.slice(0, 120)}...
+    <Typography variant="body2"
+          color="text.secondary"
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+      {blog.content.slice(0, 50)}...
     </Typography>
-    <Typography variant="caption" display="block" mt={1}>
-      By {blog.author.firstName} {blog.author.lastName}
-    </Typography>
+     <Box mt={2} display="flex" justifyContent="space-between" alignItems="center" gap={1}
+    sx={{
+      backgroundColor: "#96C3EB",
+      p: 1,
+      borderRadius: 2,
+      mt: 2,
+    }}>
+
+       <Avatar sx={{ width: 30, height: 30, fontSize: 13,bgcolor: "#14AAF5",
+        color: "#fff", }}>
+            {blog.author?.firstName?.charAt(0).toUpperCase() || "A"}
+          </Avatar>
+          <Typography variant="caption" color="black">
+            {blog.author?.firstName} {blog.author?.lastName} •{" "}
+            {new Date(blog.createdAt).toLocaleDateString("en-GB")}
+          </Typography>
+     </Box>
+    
   </CardContent>
   <CardActions sx={{ justifyContent: "flex-end" }}>
     <Button

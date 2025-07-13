@@ -17,31 +17,63 @@ app.use(cors({
 
 app.use(express.json());
 
-// 🔐 REGISTER
+// REGISTER
 app.post('/auth/register', async (req, res) => {
-  try {
-    const { firstName, lastName, email, username, password } = req.body;
+  const { firstName, lastName, email, username, password } = req.body;
 
-    if (!firstName || !lastName || !email || !username || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+  if (!firstName || !lastName || !email || !username || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    // Check if user already exists
+    const existingUser = await client.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'User with this email or username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await client.user.create({
-      data: { firstName, lastName, email, username, password: hashedPassword },
+    const newUser = await client.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        username,
+        password: hashedPassword,
+      },
     });
 
-    res.status(201).json({ message: 'User created successfully' });
-  } catch (e: any) {
-    console.error('Registration Error:', e);
-    res.status(400).json({ message: 'Registration failed', error: e.message });
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        id: newUser.id,
+        email: newUser.email,
+        username: newUser.username,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+      },
+      JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.status(201).json({ message: 'User created successfully', token });
+  } catch (error: any) {
+    console.error('Registration Error:', error);
+    res.status(500).json({ message: 'Registration failed', error: error.message });
   }
 });
 
-// 🔐 LOGIN
+// LOGIN
 app.post('/auth/login', async (req, res) => {
   const { identifier, password } = req.body;
+
+  console.log("Login attempt:", identifier, password);
 
   try {
     const user = await client.user.findFirst({
@@ -50,7 +82,14 @@ app.post('/auth/login', async (req, res) => {
       },
     });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      console.log("User not found");
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log("Password mismatch");
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
@@ -66,24 +105,26 @@ app.post('/auth/login', async (req, res) => {
       { expiresIn: '1d' }
     );
 
+    console.log("Login successful for", user.email);
     res.json({ token });
   } catch (e) {
-    console.error('Login Error:', e);
+    console.error("Login Error:", e);
     res.status(500).json({ message: 'Login failed' });
   }
 });
 
-// 👤 PROTECTED ROUTE TEST
+
+// PROTECTED ROUTE TEST
 app.get('/protected', verifyToken, (req, res) => {
   res.json({ message: 'You are authenticated', user: (req as AuthRequest).user });
 });
 
-// 🏠 ROOT
+// ROOT
 app.get('/', (_req, res) => {
   res.send('<h1>Welcome to the Blogit API</h1>');
 });
 
-// 📝 CREATE BLOG
+// CREATE BLOG
 app.post('/api/blogs', verifyToken, async (req: AuthRequest, res) => {
   const { title, synopsis, content, featuredImg } = req.body;
 
@@ -109,7 +150,7 @@ app.post('/api/blogs', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// 📚 GET ALL BLOGS
+// GET ALL BLOGS
 app.get('/api/blogs', async (_req, res) => {
   try {
     const blogs = await client.blog.findMany({
@@ -134,7 +175,7 @@ app.get('/api/blogs', async (_req, res) => {
   }
 });
 
-// 📄 GET BLOG BY ID
+// GET BLOG BY ID
 app.get('/api/blogs/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -164,7 +205,7 @@ app.get('/api/blogs/:id', async (req, res) => {
   }
 });
 
-// 👤 GET LOGGED-IN USER'S BLOGS
+// GET LOGGED-IN USER'S BLOGS
 app.get('/api/user/blogs', verifyToken, async (req: AuthRequest, res) => {
   try {
     const blogs = await client.blog.findMany({
@@ -182,7 +223,7 @@ app.get('/api/user/blogs', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// ✏️ UPDATE BLOG
+// UPDATE BLOG
 app.patch('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   const { id } = req.params;
   const { title, synopsis, content, featuredImg } = req.body;
@@ -210,7 +251,7 @@ app.patch('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// 🗑️ DELETE BLOG (SOFT DELETE)
+// DELETE BLOG (SOFT DELETE)
 app.delete('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   const { id } = req.params;
 
@@ -237,7 +278,39 @@ app.delete('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// 🚀 START SERVER
+// START SERVER
 const port = process.env.PORT || 5678;
-app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));
+app.listen(port, () => console.log(` Server running on http://localhost:${port}`));
+
+
+
+// GET /api/blogs/user/:userId
+app.get('/blogs/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const blogs = await client.blog.findMany({
+      where: {
+        author: {
+          id: userId,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        author: true,
+      },
+    });
+
+    res.json(blogs);
+  } catch (err) {
+    console.error("Error fetching user blogs:", err);
+    res.status(500).json({ error: 'Failed to fetch user blogs' });
+  }
+});
+
+
+
+
 

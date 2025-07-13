@@ -96,7 +96,15 @@ const BlogDetailsPage = () => {
       </Typography>
 
       {blog.featuredImg && (
-        <Card sx={{ my: 3 }}>
+        <Card sx={{  
+          width: '45%',
+          maxHeight: 300,
+          objectFit: 'cover',
+          borderRadius: 2,
+          my: 3
+             
+          }}>
+
           <CardMedia
             component="img"
             height="300"
