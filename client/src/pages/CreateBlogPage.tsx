@@ -14,7 +14,7 @@ import { useAuth } from "../context/AuthContext";
 const CreateBlogPage = () => {
   const [title, setTitle] = useState("");
   const [synopsis, setSynopsis] = useState("");
-  const [featuredImg, setFeaturedImg] = useState(""); // ✅ matches backend
+  const [featuredImg, setFeaturedImg] = useState(""); 
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -39,27 +39,27 @@ const CreateBlogPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5678/api/blogs", // ✅ backend port
+        "http://localhost:5678/api/blogs", 
         {
           title,
           synopsis,
-          featuredImg, // ✅ key name matches backend
+          featuredImg,
           content,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
       );
 
-      console.log("Blog created:", res.data);
+          console.log("Blog created:", res.data);
       setSuccess(true);
       navigate("/blogs");
     } catch (err: any) {
       console.error("Create blog error:", err.response);
-      setError(err.response?.data?.message || "Failed to create blog");
+         setError(err.response?.data?.message || "Failed to create blog");
     }
   };
 
@@ -70,25 +70,25 @@ const CreateBlogPage = () => {
       </Typography>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+    <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
       {success && (
         <Alert severity="success" sx={{ mb: 2 }}>
-          Blog created successfully!
+       Blog created successfully!
         </Alert>
       )}
 
       <Box component="form" onSubmit={handleSubmit} noValidate>
         <TextField
-          fullWidth
+         fullWidth
           label="Title"
-          value={title}
+         value={title}
           onChange={(e) => setTitle(e.target.value)}
           sx={{ mb: 2 }}
-          required
+            required
         />
         <TextField
           fullWidth

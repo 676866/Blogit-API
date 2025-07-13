@@ -11,8 +11,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; // ✅ Import auth
-
+import { useAuth } from "../context/AuthContext"; 
 interface Blog {
   id: string;
   title: string;
@@ -32,7 +31,7 @@ const BlogDetailsPage = () => {
   const navigate = useNavigate();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user, token } = useAuth(); // ✅ Get user & token
+  const { user, token } = useAuth(); 
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -118,7 +117,7 @@ const BlogDetailsPage = () => {
         <ReactMarkdown>{blog.content}</ReactMarkdown>
       </Box>
 
-      {/* ✅ Edit & Delete buttons */}
+      
       {isAuthor && (
         <Box sx={{ mt: 4, display: "flex", gap: 2 }}>
           <Button

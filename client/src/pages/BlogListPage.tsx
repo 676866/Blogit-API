@@ -48,7 +48,7 @@ const BlogListPage = () => {
   }, []);
 
   return (
-    <Container sx={{ mt: 4,  py: 6}}>
+    <Container sx={{ mt: 5,  py: 6}}>
       <Box  display="flex" justifyContent="space-between" mb={3}>
       <Typography variant="h4"  fontWeight={600} >
         Recent Blogs Posts

@@ -32,7 +32,7 @@ type Blog = {
 
 const ProfilePage = () => {
 
-  const navigate = useNavigate(); // ✅ this defines 'navigate'
+  const navigate = useNavigate(); 
 
 
   const { user } = useAuth();
@@ -48,12 +48,12 @@ const ProfilePage = () => {
   };
 
   const handleSaveProfile = () => {
-    // TODO: connect to backend to update profile
+    
     console.log("Saving profile:", formData);
     setEditOpen(false);
   };
 
-  // Fetch user blogs from backend
+ 
 const {
   data: blogs,
   isLoading,
@@ -95,7 +95,7 @@ console.log({ blogs, isLoading, isError, error });
                 height: 100,
                 mx: "auto",
                 mb: 2,
-                bgcolor: "primary.main",
+                bgcolor: "#6E77EE",
                 fontSize: 36,
               }}
             >
@@ -108,17 +108,19 @@ console.log({ blogs, isLoading, isError, error });
               {email}
             </Typography>
 
-            <Box sx={{ mt: 4, display: "flex", gap: 2, justifyContent: "center" }}>
-              <Button variant="contained" onClick={() => setEditOpen(true)}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "center" }}>
+              <Button variant="contained"     sx={{ minWidth: '100px', height: '45px' }}
+ onClick={() => setEditOpen(true)}>
                 Edit Profile
               </Button>
-              <Button variant="outlined" href="/blogs">
+              <Button variant="outlined"     sx={{ minWidth: '150px', height: '45px' }}
+ href="/blogs">
                 View All Blogs
               </Button>
 
 <Button 
   variant="contained" 
-  sx={{ mt: 2, mr: 2 }} 
+    sx={{ minWidth: '100px', height: '45px' }}
   onClick={() => navigate("/my-blogs")}
 >
   My Blogs
@@ -126,7 +128,7 @@ console.log({ blogs, isLoading, isError, error });
 
             </Box>
 
-            {/* My Blogs Section */}
+          
             <Box sx={{ mt: 6, textAlign: "left" }}>
   <Typography variant="h6" gutterBottom>
     My Blogs
@@ -154,7 +156,7 @@ console.log({ blogs, isLoading, isError, error });
         </motion.div>
       </Container>
 
-      {/* Edit Profile Dialog */}
+     
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>

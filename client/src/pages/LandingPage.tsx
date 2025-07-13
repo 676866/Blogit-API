@@ -17,8 +17,8 @@ const LandingPage = () => {
         justifyContent: "center",
         textAlign: "center",
         px: 2,
-        color: "#fff",
-        backdropFilter: "brightness(0.6)", // Optional: darken for contrast
+        color: "white",
+        backdropFilter: "brightness(0.6)",
       }}
     >
       <Container maxWidth="sm">

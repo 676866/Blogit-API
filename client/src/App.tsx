@@ -8,9 +8,10 @@ import { Toaster } from 'react-hot-toast';
 import BlogCreatePage from './pages/BlogCreatePage';
 import ProfilePage from './pages/ProfilePage';
 import PrivateRoute from './components/PrivateRoute';
+
 import BlogListPage from './pages/BlogListPage';
 import BlogDetailsPage from "./pages/BlogDetailsPage";
-import CreateBlogPage from "./pages/CreateBlogPage";  //for the create blog page
+import CreateBlogPage from "./pages/CreateBlogPage";  
 import EditBlogPage from './pages/EditBlogPage';
 import MyBlogsPage from './pages/MyBlogsPage';
 
@@ -32,9 +33,8 @@ const App = () => {
   <Route path="/blogs/:id/edit" element={<EditBlogPage />} />
   <Route path="/my-blogs" element={<MyBlogsPage />} />
 
-   {/* <Route path="/blogs/:id/edit" element={<EditBlogPage />} />  */}
    
-
+   
       </Routes>
     </Router>
   );

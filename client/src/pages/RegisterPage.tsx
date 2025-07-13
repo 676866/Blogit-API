@@ -26,12 +26,12 @@ const RegisterPage = () => {
       const res = await axios.post("http://localhost:5678/auth/register", formData);
       
       console.log("Token:", res.data.token);
-      // ✅ Show success and redirect after delay
+      
       alert("Registration successful! Redirecting to login...");
       
       setTimeout(() => {
         navigate("/login");
-      }, 1500); // Optional delay: 1.5 seconds
+      }); 
 
     } catch (err: any) {
       console.error("Registration failed:", err.response?.data || err.message);

@@ -9,11 +9,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../context/AuthContext"; // ✅ import context
+import { useAuth } from "../context/AuthContext"; 
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser } = useAuth(); // ✅ get setUser from context
+  const { setUser } = useAuth(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -28,7 +28,7 @@ const Login = () => {
       const token = res.data.token;
       localStorage.setItem("token", token);
 
-      // ✅ Decode token and update user context
+      
       const payload = JSON.parse(atob(token.split(".")[1]));
       setUser({
         id: payload.id,
@@ -39,7 +39,7 @@ const Login = () => {
       });
 
       toast.success("Login successful!");
-      navigate("/profile"); // ✅ redirect
+      navigate("/profile"); 
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Login failed");
     }

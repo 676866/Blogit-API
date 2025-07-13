@@ -17,7 +17,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// REGISTER
+// for registering 
 app.post('/auth/register', async (req, res) => {
   const { firstName, lastName, email, username, password } = req.body;
 
@@ -49,7 +49,7 @@ app.post('/auth/register', async (req, res) => {
       },
     });
 
-    // Generate JWT token
+    
     const token = jwt.sign(
       {
         id: newUser.id,
@@ -69,7 +69,7 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
-// LOGIN
+// for logging in
 app.post('/auth/login', async (req, res) => {
   const { identifier, password } = req.body;
 
@@ -114,17 +114,17 @@ app.post('/auth/login', async (req, res) => {
 });
 
 
-// PROTECTED ROUTE TEST
+
 app.get('/protected', verifyToken, (req, res) => {
   res.json({ message: 'You are authenticated', user: (req as AuthRequest).user });
 });
 
-// ROOT
+
 app.get('/', (_req, res) => {
   res.send('<h1>Welcome to the Blogit API</h1>');
 });
 
-// CREATE BLOG
+// for creating blogs
 app.post('/api/blogs', verifyToken, async (req: AuthRequest, res) => {
   const { title, synopsis, content, featuredImg } = req.body;
 
@@ -150,19 +150,19 @@ app.post('/api/blogs', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// GET ALL BLOGS
+// get all blogs
 app.get('/api/blogs', async (_req, res) => {
   try {
     const blogs = await client.blog.findMany({
       where: { isDeleted: false },
       orderBy: { createdAt: 'desc' },
-      include: {
-        author: {
-          select: {
-            firstName: true,
-            lastName: true,
-            username: true,
-            email: true,
+  include: {
+    author: {
+      select: {
+     firstName: true,
+        lastName: true,
+      username: true,       
+      email: true,
           },
         },
       },
@@ -175,7 +175,7 @@ app.get('/api/blogs', async (_req, res) => {
   }
 });
 
-// GET BLOG BY ID
+// get blog by id
 app.get('/api/blogs/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -184,13 +184,13 @@ app.get('/api/blogs/:id', async (req, res) => {
       where: { id },
       include: {
         author: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true,
-            username: true,
-          },
-        },
+      select: {
+        firstName: true,
+        lastName: true,
+         email: true,
+         username: true,
+     },
+    },
       },
     });
 
@@ -205,15 +205,15 @@ app.get('/api/blogs/:id', async (req, res) => {
   }
 });
 
-// GET LOGGED-IN USER'S BLOGS
+// foe getting loged in uder blogs
 app.get('/api/user/blogs', verifyToken, async (req: AuthRequest, res) => {
   try {
     const blogs = await client.blog.findMany({
       where: {
-        userId: req.user.id,
-        isDeleted: false,
+   userId: req.user.id,
+   isDeleted: false,
       },
-      orderBy: { createdAt: 'desc' },
+   orderBy: { createdAt: 'desc' },
     });
 
     res.json(blogs);
@@ -223,7 +223,7 @@ app.get('/api/user/blogs', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// UPDATE BLOG
+// for updatng blog
 app.patch('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   const { id } = req.params;
   const { title, synopsis, content, featuredImg } = req.body;
@@ -231,9 +231,9 @@ app.patch('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   try {
     const blog = await client.blog.findFirst({
       where: {
-        id,
-        userId: req.user.id,
-        isDeleted: false,
+     id,
+    userId: req.user.id,
+    isDeleted: false,
       },
     });
 
@@ -251,16 +251,16 @@ app.patch('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// DELETE BLOG (SOFT DELETE)
+// for delting blog
 app.delete('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   const { id } = req.params;
 
   try {
     const blog = await client.blog.findFirst({
       where: {
-        id,
-        userId: req.user.id,
-        isDeleted: false,
+    id,
+     userId: req.user.id,
+     isDeleted: false,
       },
     });
 
@@ -278,29 +278,29 @@ app.delete('/api/blogs/:id', verifyToken, async (req: AuthRequest, res) => {
   }
 });
 
-// START SERVER
+
 const port = process.env.PORT || 5678;
 app.listen(port, () => console.log(` Server running on http://localhost:${port}`));
 
 
 
-// GET /api/blogs/user/:userId
+// for getting /api/blogs/user/:userId
 app.get('/blogs/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
     const blogs = await client.blog.findMany({
       where: {
-        author: {
-          id: userId,
+       author: {
+      id: userId,
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        author: true,
-      },
+    orderBy: {
+     createdAt: 'desc',
+     },
+    include: {
+     author: true,
+    },
     });
 
     res.json(blogs);
