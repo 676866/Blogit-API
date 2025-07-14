@@ -9,9 +9,16 @@ import { verifyToken, AuthRequest } from './middleware/authMiddleware';
 const app: Express = express();
 const client = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+const allowedOrigins = ["http://localhost:5173", "http://localhost:5175"];
 
 app.use(cors({
-  origin: "http://localhost:5175", 
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true               
 }));
 
