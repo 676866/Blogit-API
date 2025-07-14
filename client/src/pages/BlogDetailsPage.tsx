@@ -81,11 +81,14 @@ const BlogDetailsPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h3" gutterBottom>
+      <Typography variant="h3" fontWeight="bold" gutterBottom>
         {blog.title}
       </Typography>
+      <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+          {blog.synopsis}
+        </Typography>
 
-      <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="subtitle2"   style={{ fontWeight: 'bold', color: '#000' }}> 
         By {blog.author.firstName} {blog.author.lastName} •{" "}
         {new Date(blog.createdAt).toLocaleDateString(undefined, {
           year: "numeric",
@@ -104,6 +107,8 @@ const BlogDetailsPage = () => {
              
           }}>
 
+          
+
           <CardMedia
             component="img"
             height="300"
@@ -113,7 +118,18 @@ const BlogDetailsPage = () => {
         </Card>
       )}
 
-      <Box sx={{ mt: 2 }}>
+      <Box   sx={{
+    mt: 2,
+    whiteSpace: "pre-line",
+    '& > *:first-of-type::first-letter': {
+      fontSize: '2.5rem',
+      fontWeight: 'bold',
+      float: 'left',
+      lineHeight: '1',
+      pr: 1,
+    },
+  }}
+>
         <ReactMarkdown>{blog.content}</ReactMarkdown>
       </Box>
 

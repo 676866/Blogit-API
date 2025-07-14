@@ -28,10 +28,10 @@ const LandingPage = () => {
           transition={{ duration: 0.8 }}
         >
           <Typography variant="h2" gutterBottom sx={{ fontWeight: "bold" }}>
-            Welcome to BlogIt
+            "BlogIt😎, Turn Thoughts Into Timeless Blogs"
           </Typography>
           <Typography variant="h6" sx={{ mb: 4 }}>
-            Create, share, and explore inspiring blog stories.
+            Write ✍️. Inspire💡. Discover voices that matter🌍.
           </Typography>
           <Button
             variant="contained"
